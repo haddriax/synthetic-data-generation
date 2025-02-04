@@ -1,5 +1,7 @@
 import multiprocessing
 import pandas as pd
+from pandas import read_json
+
 from data.models import BodyMeasurementDistributionData
 from data.generators import BodyMeasurementDistribution
 from file_io.json_handler import save_json
@@ -19,9 +21,26 @@ def main(distributions_data: list[BodyMeasurementDistributionData], plot_type: G
     if plot_type != Graph.NO_GRAPH:
         DistributionVisualizer.plot_distributions(dataframes=dataframes, graph_type=plot_type)
 
-    # Concatenate all data and export to JSON.
-    data = pd.concat(dataframes)
-    save_json(data, OUTPUT_JSON)
+    # Wrap the generated data in a PopulationSample.
+    from data.population_sample import PopulationSample
+    concat_dataframes = pd.concat(dataframes)
+
+    sample = PopulationSample(concat_dataframes)
+
+    # Add variety by inserting characteristics.
+    muscles_df = read_json('sources/muscles.json')
+    muscles_list = muscles_df['muscles'].dropna().tolist()
+
+    from utils.helpers import injury_generator
+    sample.add_characteristic(
+        'injury',
+        injury_generator,
+        muscles_list=muscles_list,
+        injury_probability=0.1
+    )
+
+    # Export the final sample to JSON.
+    save_json(sample.get_sample(), OUTPUT_JSON)
 
 
 if __name__ == "__main__":
@@ -35,7 +54,7 @@ if __name__ == "__main__":
             correlation_hw=0.60,
             mean_age=36,
             std_age=8,
-            samples=25000
+            samples=250
         ),
         BodyMeasurementDistributionData(
             group_name="Women",
@@ -46,7 +65,8 @@ if __name__ == "__main__":
             correlation_hw=0.45,
             mean_age=36,
             std_age=8,
-            samples=25000
+            samples=250
         )
     ]
+
     main(body_distributions_data, Graph.SCATTER)

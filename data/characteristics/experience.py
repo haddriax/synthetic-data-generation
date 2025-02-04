@@ -10,6 +10,7 @@ class ExperienceCharacteristic(Characteristic):
         :raise FileNotFoundError: If the file experiences.json doesn't exist in the source folder.
         """
         # @todo Code a proper selection instead of just a random pull.
+        # @todo Handle JSON format errors.
         try:
             experiences_df = read_json('source/experiences.json')
         except FileNotFoundError:

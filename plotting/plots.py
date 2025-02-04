@@ -12,6 +12,7 @@ class Graph(Enum):
     KDE_PLOT = "kde_plot"
 
 
+# @todo this class only work for the weight and height distribution, it should be improved to be generic or moved.
 class DistributionVisualizer:
     """
     Provides different plotting methods for the synthetic data.

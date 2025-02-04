@@ -27,17 +27,20 @@ def main(distributions_data: list[BodyMeasurementDistributionData], plot_type: G
 
     sample = PopulationSample(concat_dataframes)
 
-    # Add variety by inserting characteristics.
-    muscles_df = read_json('sources/muscles.json')
-    muscles_list = muscles_df['muscles'].dropna().tolist()
+    # Generate more data by inserting characteristics.
+    from data.characteristics.injury import InjuryCharacteristic
+    try:
+        injury_char = InjuryCharacteristic(injury_probability=0.10)
+        sample.add_characteristic('injury', injury_char)
+    except FileNotFoundError as e:
+        print(f" InjuryCharacteristic has been skipped due to an exception occurring ---\n{e}")
 
-    from utils.helpers import injury_generator
-    sample.add_characteristic(
-        'injury',
-        injury_generator,
-        muscles_list=muscles_list,
-        injury_probability=0.1
-    )
+    from data.characteristics.experience import ExperienceCharacteristic
+    try:
+        experience_char = ExperienceCharacteristic()
+        sample.add_characteristic('experience_level', experience_char)
+    except FileNotFoundError as e:
+        print(f" ExperienceCharacteristic has been skipped due to an exception occurring ---\n{e}")
 
     # Export the final sample to JSON.
     save_json(sample.get_sample(), OUTPUT_JSON)
@@ -69,4 +72,4 @@ if __name__ == "__main__":
         )
     ]
 
-    main(body_distributions_data, Graph.SCATTER)
+    main(body_distributions_data, Graph.NO_GRAPH)

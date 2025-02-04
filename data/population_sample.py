@@ -16,29 +16,23 @@ class PopulationSample:
         # Store added characteristics and their generator details (for reference or re-generation)
         self.characteristics = {}
 
-    def add_characteristic(self, name: str, generator_function, **kwargs):
+    def add_characteristic(self, name: str, characteristic):
         """
         Adds a new characteristic column to the sample.
 
-        :param name: Name of the characteristic (column name).
-        :param generator_function: A callable that accepts an integer (number of samples) plus additional keyword
-                                   arguments and returns an iterable of values of that length.
-        :param kwargs: Keyword arguments to pass to the generator function.
+        :param name: Name of the characteristic (i.e., the column name).
+        :param characteristic: An instance of a characteristic generator that implements generate(n).
 
         :raise ValueError: The characteristic already exists when trying to insert it.
         """
-        # @todo normalize columns names
+        # @todo normalizing all columns names would be great (to lower)
         if name in self.dataframe.columns:
             raise ValueError(f"Trying to add {name} characteristic, but it already exists in the dataframe.")
 
         n = len(self.dataframe)
-
-        generated_values = generator_function(n, **kwargs)
+        generated_values = characteristic.generate(n)
         self.dataframe[name] = generated_values
-        self.characteristics[name] = {
-            'generator': generator_function,
-            'params': kwargs
-        }
+        self.characteristics[name] = characteristic
 
     def get_sample(self) -> pd.DataFrame:
         """

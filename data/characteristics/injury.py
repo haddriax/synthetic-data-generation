@@ -12,7 +12,7 @@ class InjuryCharacteristic(Characteristic):
         :raise FileNotFoundError: If the file muscles.json doesn't exist in the source folder.
         """
 
-        #  @todo Handle JSON format errors.
+        # @todo Handle JSON format errors.
         try:
             muscles_df = read_json('source/muscles.json')
         except FileNotFoundError:

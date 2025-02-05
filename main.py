@@ -33,14 +33,18 @@ def main(distributions_data: list[BodyMeasurementDistributionData], plot_type: G
         injury_char = InjuryCharacteristic(injury_probability=0.10)
         sample.add_characteristic('injury', injury_char)
     except FileNotFoundError as e:
-        print(f" InjuryCharacteristic has been skipped due to an exception occurring ---\n{e}")
+        print(f" InjuryCharacteristic has been skipped: \n reason: {e}")
+    except KeyError as e:
+        print(f" InjuryCharacteristic has been skipped: \n reason: {e}")
 
     from data.characteristics.experience import ExperienceCharacteristic
     try:
         experience_char = ExperienceCharacteristic()
         sample.add_characteristic('experience_level', experience_char)
     except FileNotFoundError as e:
-        print(f" ExperienceCharacteristic has been skipped due to an exception occurring ---\n{e}")
+        print(f" ExperienceCharacteristic has been skipped: \n reason: {e}")
+    except KeyError as e:
+        print(f" ExperienceCharacteristic has been skipped: \n reason: {e}")
 
     # Export the final sample to JSON.
     save_json(sample.get_sample(), OUTPUT_JSON)

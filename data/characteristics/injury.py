@@ -10,15 +10,18 @@ class InjuryCharacteristic(Characteristic):
         :param injury_probability: Probability that an individual sustains an injury.
 
         :raise FileNotFoundError: If the file muscles.json doesn't exist in the source folder.
+        :raise KeyError: If the file muscles.json doesn't have a single key named 'muscles'.
         """
-
-        # @todo Handle JSON format errors.
+        json_path = 'source/muscles.json'
         try:
-            muscles_df = read_json('source/muscles.json')
+            muscles_df = read_json(json_path)
         except FileNotFoundError:
             raise FileNotFoundError(f"The file containing the muscles that can be injured was not found.")
 
-        self.muscles_list = muscles_df['muscles'].dropna().tolist()
+        try:
+            self.muscles_list = muscles_df['muscles'].dropna().tolist()
+        except KeyError as e:
+            raise KeyError(f"The key 'muscles' does not exist in {json_path}.")
         self.injury_probability = injury_probability
 
     def generate(self, n: int):

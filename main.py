@@ -66,7 +66,7 @@ def main(distributions_data: list[BodyMeasurementDistributionData], plot_type: G
     except KeyError as e:
         print(f" EquipmentCharacteristic has been skipped: \n reason: {e}")
 
-    save_json(sample.get_sample(), OUTPUT_JSON)
+    save_json(sample.get_sample(), OUTPUT_JSON, True)
 
 
 if __name__ == "__main__":

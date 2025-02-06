@@ -1,7 +1,7 @@
 import multiprocessing
 import pandas as pd
-from pandas import read_json
 
+from data.characteristics.goal import GoalCharacteristic
 from data.models import BodyMeasurementDistributionData
 from data.generators import BodyMeasurementDistribution
 from file_io.json_handler import save_json
@@ -46,7 +46,26 @@ def main(distributions_data: list[BodyMeasurementDistributionData], plot_type: G
     except KeyError as e:
         print(f" ExperienceCharacteristic has been skipped: \n reason: {e}")
 
-    # Export the final sample to JSON.
+    try:
+        experience_char = GoalCharacteristic()
+        sample.add_characteristic('main_goal', experience_char)
+    except FileNotFoundError as e:
+        print(f" GoalCharacteristic has been skipped: \n reason: {e}")
+    except KeyError as e:
+        print(f" GoalCharacteristic has been skipped: \n reason: {e}")
+
+    from data.characteristics.training_duration import TrainingDurationCharacteristic
+    training_duration_char = TrainingDurationCharacteristic()
+    sample.add_characteristic('training_duration', training_duration_char)
+    try:
+        from data.characteristics.equipment import EquipmentCharacteristic
+        equipment_char = EquipmentCharacteristic()
+        sample.add_characteristic('equipment', equipment_char)
+    except FileNotFoundError as e:
+        print(f" EquipmentCharacteristic has been skipped: \n reason: {e}")
+    except KeyError as e:
+        print(f" EquipmentCharacteristic has been skipped: \n reason: {e}")
+
     save_json(sample.get_sample(), OUTPUT_JSON)
 
 
@@ -61,7 +80,7 @@ if __name__ == "__main__":
             correlation_hw=0.60,
             mean_age=36,
             std_age=8,
-            samples=250
+            samples=50
         ),
         BodyMeasurementDistributionData(
             group_name="Women",
@@ -72,7 +91,7 @@ if __name__ == "__main__":
             correlation_hw=0.45,
             mean_age=36,
             std_age=8,
-            samples=250
+            samples=50
         )
     ]
 
